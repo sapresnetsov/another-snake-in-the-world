@@ -1,15 +1,20 @@
 import React from 'react';
-import Header from './header';
+import Header from './header/header';
+import GameField from './game_field/game_field';
+import Control from './control/control';
+import ScoresField from './scores_field/scores_field';
 
-const Main:React.FunctionComponent = () => {
+const Main:React.FunctionComponent = () => {    
     return (
-        <div className='wrapper' style={{backgroundImage: `url(images/background.jpg)`}}>
-            
-            <Header settingsButtonVisible={false}/>
-            <main>
-                <div className='game_field'></div>
+        <div className='layout'>              
+            <Header />           
+            <main>                                                            
+                <GameField />
+                <section className='control_container'>
+                    <ScoresField />  
+                    <Control />
+                </section>
             </main>
-            
         </div>
     )
 }
