@@ -21,8 +21,8 @@ $breakpoints: (
   "375px": 23.4375rem,
   "480px": 30rem,
   "568px": 35.5rem,
-  "m": 25rem,
-  "xl": 30rem,
+  // "m": 25rem,
+  // "xl": 30rem,
 );
 @function index-to-key($index) {
   $keys: map-keys($breakpoints);
@@ -30,18 +30,31 @@ $breakpoints: (
   @return nth($keys, $index);
 }
 
+@function get-map-index-by-key($breakpoints, $key_value) {
+  $index: 0;
+  @each $key, $value in $breakpoints {
+    @if $key == $key_value {
+      @return $index; 
+    }
+    $index: $index + 1;
+  }
+  @return $index;
+}
+
 @mixin breakpoints($screen-size, $screen-orientation) {
   $media-query: "screen and";
   $previous-screen-size: 0;
   @if map-has-key($breakpoints, $screen-size) {
     $screen-size-index: 0;
-    $i: 1;
-    @each $key, $value in $breakpoints {
-      @if $key == $screen-size {
-        $screen-size-index: $i; 
-      }
-      $i: $i + 1;
-    }
+    // $i: 1;
+    // @each $key, $value in $breakpoints {
+    //   @if $key == $screen-size {
+    //     $screen-size-index: $i; 
+    //   }
+    //   $i: $i + 1;
+    // }
+    $screen-size-index: get-map-index-by-key($breakpoints, $screen-size) + 1;
+    @debug $screen-size-index;
     $screen-size: map-get($breakpoints, $screen-size);
     $previous-screen-size: $screen-size;
     @if $screen-size-index == 1 {
@@ -59,7 +72,7 @@ $breakpoints: (
   }  
   
   @media #{$media-query} {   
-    min-width: $previous-screen-size; 
+    // min-width: $previous-screen-size; 
     @content;
   }
 }
@@ -98,18 +111,13 @@ button {
 
   @each $size, $value in $breakpoints {
     @include breakpoints($size, portrait) {
-      // min-width: $value;
+      min-width: $value;
     };
     @include breakpoints($size, landscape) {
       flex-direction: row;
-      // min-width: $value;
+      min-width: 500px;
     };
   }  
-  
-  // @include breakpoints("375px", portrait) {
-  //   min-width: 20rem;
-  // };
-  
 }
 
 main {
@@ -117,12 +125,18 @@ main {
   align-items: center;  
   flex-grow: 1;
   width: 100%;  
+  @each $size, $value in $breakpoints {
+    justify-content: unset;
+    @include breakpoints($size, landscape) {
+      flex-direction: row;
+    };
+  }  
 }
 .control_container {
   @extend %flex-column;
   justify-content: space-around;
   flex-grow: 1;
-  width: map-get($breakpoints, "xl");
+  width: map-get($breakpoints, "480px");
   max-width: 100%;
   
   padding: 0 1rem;
@@ -139,8 +153,21 @@ main {
 }
 
 .game_field {
-  width: map-get($breakpoints, "xl");
-  height: map-get($breakpoints, "xl");
+  @each $size, $value in $breakpoints {
+    width: map-get($breakpoints, "480px");
+    height: map-get($breakpoints, "480px");
+    @include breakpoints($size, portrait) {
+      $game_field_side_size: map-get($breakpoints, #{$size}) - 1rem; 
+      width: $game_field_side_size !important;
+      height: $game_field_side_size !important;
+    };
+    @include breakpoints($size, landscape) {
+      $game_field_side_size: map-get($breakpoints, #{$size}) / 2; 
+      width: $game_field_side_size !important;
+      height: $game_field_side_size !important;
+    };
+  }  
+  
 
   border-radius: .625rem;
 
@@ -157,9 +184,9 @@ main {
       font-size: 1.3rem !important;
     }    
   }
-  main {
-    justify-content: unset;
-  }
+  // main {
+  //   justify-content: unset;
+  // }
   .game_field {
     width: 19.375rem;
     height: 19.375rem;
@@ -179,14 +206,14 @@ main {
       display: none;
     }    
   }
-  main {
-    flex-direction: row;
-    justify-content: unset;
-  }  
-  .game_field {
-    width: 19.375rem;
-    height: 19.375rem;
-  }  
+  // main {
+  //   flex-direction: row;
+  //   justify-content: unset;
+  // }  
+  // .game_field {
+  //   width: 19.375rem;
+  //   height: 19.375rem;
+  // }  
   .control_container {    
     width: auto;
     height: 100%;
@@ -215,12 +242,12 @@ main {
   max-width: 31.75rem;
 
   button {
-      svg {
-          fill: #444;
-          &:hover {
-              fill: #666;
-          }
-      }
+    svg {
+        fill: #444;
+        &:hover {
+            fill: #666;
+        }
+    }
   }
 }
 
@@ -255,8 +282,3 @@ main {
       100% {transform: rotate(360deg);}
   }
 }
-
-// .control_icon {
-//   width: 30px;
-//   height: 30px;
-// }
